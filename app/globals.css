@@ -1,26 +1,64 @@
 @import "tailwindcss";
+@config "../tailwind.config.js";
+
+@theme {
+  --color-meraki-black: #101010;
+  --color-meraki-gold: #D9A441;
+  --color-meraki-cream: #EEE7D8;
+  --color-meraki-stone: #A9A9A5;
+}
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --background: #EEE7D8;
+  --foreground: #101010;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: #EEE7D8;
+  color: #101010;
+  font-family: var(--font-geist-sans), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  margin: 0;
+  padding: 0;
 }
+
+/* Brutalist strict zero-radius enforcement */
+*,
+*::before,
+*::after {
+  border-radius: 0;
+}
+
+/* Brutalist linear progress bar animation */
+@keyframes progressFill {
+  from {
+    width: 0%;
+  }
+  to {
+    width: 100%;
+  }
+}
+
+.animate-progressFill {
+  animation: progressFill 4s linear forwards;
+}
+
+/* Brutalist infinite ticker tape / marquee animation */
+@keyframes marquee {
+  0% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-marquee {
+  animation: marquee 25s linear infinite;
+  will-change: transform;
+}
+
+.animate-marquee:hover {
+  animation-play-state: paused;
+}
+
