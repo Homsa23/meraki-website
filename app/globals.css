@@ -2,24 +2,36 @@
 @config "../tailwind.config.js";
 
 @theme {
-  --color-meraki-black: #101010;
-  --color-meraki-gold: #D9A441;
-  --color-meraki-cream: #EEE7D8;
-  --color-meraki-stone: #A9A9A5;
+  --color-deep-ink: #08090c;
+  --color-basalt: #242127;
+  --color-crimson: #7e2920;
+  --color-burnt-orange: #c45b27;
+  --color-ochre: #d9a441;
+  --color-linen-cream: #e8ddc5;
+  /* Legacy aliases kept for the existing cart and catalog components. */
+  --color-meraki-black: #08090c;
+  --color-meraki-gold: #d9a441;
+  --color-meraki-cream: #e8ddc5;
+  --color-meraki-stone: #a9a9a5;
 }
 
 :root {
-  --background: #EEE7D8;
-  --foreground: #101010;
+  --background: #e8ddc5;
+  --foreground: #08090c;
 }
 
 body {
-  background-color: #EEE7D8;
-  color: #101010;
+  background-color: #e8ddc5;
+  color: #08090c;
   font-family: var(--font-geist-sans), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   margin: 0;
   padding: 0;
+}
+
+/* Editorial serif for collection titles and the wordmark. */
+.font-editorial {
+  font-family: var(--font-playfair), "Times New Roman", Times, serif;
 }
 
 /* Brutalist strict zero-radius enforcement */
