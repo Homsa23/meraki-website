@@ -14,6 +14,7 @@ module.exports = {
         "burnt-orange": "#C45B27",
         ochre: "#D9A441",
         "linen-cream": "#E8DDC5",
+        "off-white": "#FAF9F6",
         // Legacy aliases kept for the existing cart and catalog components.
         "meraki-black": "#08090C",
         "meraki-gold": "#D9A441",

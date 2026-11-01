@@ -11,7 +11,7 @@ const MotionLink = motion.create(Link);
 /*  PALETTE + CONTENT                                                          */
 /* -------------------------------------------------------------------------- */
 
-const LINEN = "#E8DDC5";
+const WHITE = "#FFFFFF";
 const INK = "#08090C";
 
 const FRAMES = [
@@ -69,12 +69,12 @@ export default function Home() {
 
   return (
     <main
-      className="relative flex h-[100svh] min-h-[540px] w-full flex-col overflow-hidden bg-linen-cream text-deep-ink selection:bg-crimson/15 selection:text-deep-ink"
-      style={{ backgroundColor: LINEN, color: INK }}
+      className="relative flex h-[100svh] min-h-[540px] w-full flex-col overflow-hidden bg-white text-deep-ink selection:bg-crimson/15 selection:text-deep-ink"
+      style={{ backgroundColor: WHITE, color: INK }}
     >
       {/* Single-file hero CSS: paper grain, cinematic reveal, mobile composition. */}
       <style>{`
-        html, body { background: ${LINEN}; }
+        html, body { background: ${WHITE}; }
 
         .noise-layer {
           background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.86' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
@@ -245,7 +245,7 @@ export default function Home() {
                     <MotionLink
                       href={frame.href}
                       aria-label={`Shop ${frame.title.toLowerCase()}`}
-                      className="frame-card relative block w-full border border-basalt/10 bg-linen-cream p-2 shadow-[0_24px_70px_rgba(8,9,12,0.16)] focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-4 focus-visible:outline-crimson lg:flex lg:h-full lg:flex-col lg:shadow-[0_24px_70px_rgba(8,9,12,0.12)]"
+                      className="frame-card relative block w-full border border-basalt/10 bg-white p-2 shadow-[0_24px_70px_rgba(8,9,12,0.16)] focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-4 focus-visible:outline-crimson lg:flex lg:h-full lg:flex-col lg:shadow-[0_24px_70px_rgba(8,9,12,0.12)]"
                     >
                       <div className="relative aspect-[3/4] w-full overflow-hidden bg-basalt/15 lg:aspect-auto lg:min-h-0 lg:flex-1">
                         <Image
@@ -259,7 +259,7 @@ export default function Home() {
                           className="frame-image object-cover object-center"
                         />
 
-                        {/* Deep Ink veil — the Linen Cream title sits on top. */}
+                        {/* Deep Ink veil — the white title sits on top. */}
                         <span
                           aria-hidden="true"
                           className="gender-shade pointer-events-none absolute inset-0 z-10"
@@ -267,10 +267,10 @@ export default function Home() {
 
                         <span className="pointer-events-none absolute inset-0 z-20 flex items-center justify-center px-4">
                           <span className="gender-reveal flex flex-col items-center text-center">
-                            <span className="mb-2 text-[8px] uppercase tracking-[0.42em] text-linen-cream/75">
+                            <span className="mb-2 text-[8px] uppercase tracking-[0.42em] text-white/75">
                               Collection
                             </span>
-                            <span className="gender-word text-linen-cream">
+                            <span className="gender-word text-white">
                               {frame.title}
                             </span>
                           </span>
@@ -322,7 +322,7 @@ export default function Home() {
             role="dialog"
             aria-modal="true"
             aria-label="Meraki index"
-            className="fixed inset-0 z-[120] flex flex-col bg-linen-cream/95 px-5 pb-5 pt-5 backdrop-blur-xl md:px-8 md:pb-6 md:pt-6"
+            className="fixed inset-0 z-[120] flex flex-col bg-white/95 px-5 pb-5 pt-5 backdrop-blur-xl md:px-8 md:pb-6 md:pt-6"
             style={{ color: INK }}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}

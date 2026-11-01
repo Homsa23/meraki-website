@@ -33,7 +33,7 @@ export default function RootLayout({ children }) {
     >
       <body
         suppressHydrationWarning
-        className="min-h-full flex flex-col bg-linen-cream text-deep-ink"
+        className="min-h-full flex flex-col bg-white text-deep-ink"
       >
         <CartProvider>
           {children}
