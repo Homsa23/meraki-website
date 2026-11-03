@@ -35,6 +35,11 @@ body {
   font-family: var(--font-playfair), "Times New Roman", Times, serif;
 }
 
+/* Custom cursor: forcefully hide the native pointer on every element. */
+* {
+  cursor: none !important;
+}
+
 /* Brutalist strict zero-radius enforcement */
 *,
 *::before,
