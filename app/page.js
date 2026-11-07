@@ -42,7 +42,7 @@ const FRAMES = [
 const INDEX_LINKS = [
   { label: "Men", href: "/men" },
   { label: "Women", href: "/women" },
-  { label: "Archive", href: "#frame-01" },
+  { label: "Styling Canvas", href: "/canvas" },
   { label: "Contact", href: "/contact" },
   { label: "Client", action: "client" },
 ];

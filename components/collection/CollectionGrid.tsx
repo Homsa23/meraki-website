@@ -4,15 +4,14 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useCart } from "@/context/CartContext";
 import {
-  MEN,
-  WOMEN,
   writeStoredOutfit,
   type Gender,
   type Product,
 } from "@/lib/collection";
+import { loadProducts } from "@/services/products";
 import ProductDrawer from "./ProductDrawer";
 
 type CollectionGridProps = {
@@ -24,10 +23,30 @@ export default function CollectionGrid({ gender, index }: CollectionGridProps) {
   const router = useRouter();
   const reduceMotion = useReducedMotion() === true;
   const { totalCount, openCart } = useCart();
-  const products = gender === "MEN" ? MEN : WOMEN;
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [source, setSource] = useState<"firestore" | "local" | null>(null);
+  const [reason, setReason] = useState<string | null>(null);
   const [selected, setSelected] = useState<string[]>([]);
   const [activeMode, setActiveMode] = useState<"shop" | "style">("shop");
   const [drawerProduct, setDrawerProduct] = useState<Product | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    loadProducts({ collection: gender }).then((result) => {
+      if (cancelled) return;
+
+      setProducts(result.products);
+      setSource(result.source);
+      setReason(result.reason);
+      setLoading(false);
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [gender]);
 
   const toggle = (id: string) => {
     setSelected((current) =>
@@ -88,6 +107,22 @@ export default function CollectionGrid({ gender, index }: CollectionGridProps) {
           <div>
             <p className="text-[9px] uppercase tracking-[0.32em] text-basalt/55">
               Collection {index} — Archive 2026
+              {!loading && source && (
+                <span
+                  title={
+                    reason === "error"
+                      ? "Firestore unavailable — showing the bundled catalog"
+                      : reason === "empty"
+                        ? "Firestore collection is empty — showing the bundled catalog"
+                        : reason === "unconfigured"
+                          ? "Firebase web config missing — showing the bundled catalog"
+                          : "Live Firestore catalog"
+                  }
+                  className="ml-2 text-basalt/35"
+                >
+                  {source === "firestore" ? "· LIVE" : "· LOCAL"}
+                </span>
+              )}
             </p>
 
             <h1 className="mt-3 font-editorial text-[13vw] font-normal leading-[0.82] tracking-[-0.03em] text-deep-ink/90 md:text-[5.5vw]">
@@ -138,6 +173,40 @@ export default function CollectionGrid({ gender, index }: CollectionGridProps) {
         aria-label={`${gender} collection — select pieces`}
         className="mx-auto w-full max-w-[1600px] flex-1 px-5 pb-36 pt-8 md:px-10 md:pb-40 md:pt-12"
       >
+        {loading ? (
+          <motion.div
+            key="collection-loading"
+            role="status"
+            aria-live="polite"
+            initial={reduceMotion ? false : { opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+            className="flex min-h-[46svh] flex-col items-center justify-center gap-5"
+          >
+            <motion.span
+              aria-hidden="true"
+              className="pl-[0.3em] font-editorial text-[30px] lowercase leading-none tracking-[0.3em] text-deep-ink md:text-[38px]"
+              animate={reduceMotion ? undefined : { opacity: [0.2, 1, 0.2] }}
+              transition={
+                reduceMotion
+                  ? undefined
+                  : { duration: 1.8, repeat: Infinity, ease: "easeInOut" }
+              }
+            >
+              meraki
+            </motion.span>
+
+            <span className="pl-[0.32em] text-[8px] uppercase tracking-[0.32em] text-basalt/55">
+              LOADING ARCHIVE...
+            </span>
+          </motion.div>
+        ) : products.length === 0 ? (
+          <div className="flex min-h-[40svh] items-center justify-center">
+            <p className="text-[9px] uppercase tracking-[0.32em] text-basalt/55">
+              ARCHIVE EMPTY
+            </p>
+          </div>
+        ) : (
         <div className="grid grid-cols-2 gap-x-4 gap-y-10 md:grid-cols-4 md:gap-x-6 md:gap-y-12 lg:grid-cols-5 lg:gap-x-8 lg:gap-y-14 xl:grid-cols-6">
           {products.map((product, i) => {
             const isSelected = selected.includes(product.id);
@@ -204,6 +273,7 @@ export default function CollectionGrid({ gender, index }: CollectionGridProps) {
             );
           })}
         </div>
+        )}
       </section>
 
       <footer className="mx-auto flex w-full max-w-[1500px] items-center justify-between px-5 pb-5 pt-4 text-[9px] tracking-[0.18em] text-basalt/55 md:px-10 md:pb-6">

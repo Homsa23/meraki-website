@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 
 /* -------------------------------------------------------------------------- */
@@ -34,15 +35,24 @@ export default function LookbookSpread() {
           <div className="relative grid w-full overflow-hidden bg-[#F9F9F9] md:grid-cols-2">
             {/* LEFT PAGE — lifestyle campaign shot, edge to edge. */}
             <div className="relative h-[58svh] min-h-[420px] overflow-hidden md:h-[78svh] md:max-h-[860px] md:min-h-[620px]">
-              <div className="absolute inset-0 bg-[linear-gradient(155deg,#D9D6D0_0%,#C2BEB6_38%,#9C978E_72%,#7E7A72_100%)] transition-transform duration-[1200ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.02]" />
+              <Image
+                src="/images/photo_2026-11-07_06-16-09.jpg"
+                alt="Look 01 lifestyle campaign shot — The Brutalist Uniform"
+                fill
+                sizes="(max-width: 767px) 100vw, 50vw"
+                draggable={false}
+                className="object-cover object-center transition-transform duration-[1200ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.02]"
+              />
 
-              {/* Brutalist placeholder composition. */}
-              <div aria-hidden="true" className="absolute inset-0">
-                <span className="absolute left-[12%] top-[18%] h-[46%] w-[34%] bg-white/10" />
-                <span className="absolute right-[8%] top-[8%] h-[62%] w-[18%] bg-black/[0.06]" />
-                <span className="absolute bottom-0 left-0 h-[18%] w-full bg-black/[0.08]" />
-                <span className="absolute bottom-[18%] left-[12%] h-[1px] w-[34%] bg-white/20" />
-              </div>
+              {/* Legibility scrims for the overlaid captions. */}
+              <span
+                aria-hidden="true"
+                className="pointer-events-none absolute inset-x-0 top-0 h-28 bg-gradient-to-b from-black/45 to-transparent"
+              />
+              <span
+                aria-hidden="true"
+                className="pointer-events-none absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-black/45 to-transparent"
+              />
 
               <span className="absolute left-5 top-5 z-10 text-[8px] uppercase tracking-[0.32em] text-white/70 md:left-8 md:top-8">
                 Campaign — 35mm
@@ -57,17 +67,23 @@ export default function LookbookSpread() {
             <div className="grid md:h-[78svh] md:max-h-[860px] md:min-h-[620px] md:grid-rows-[1.05fr_1fr]">
               {/* Macro texture shot. */}
               <div className="relative h-[26svh] min-h-[200px] overflow-hidden md:h-auto md:min-h-0">
-                <div className="absolute inset-0 bg-[#0B0C0F]" />
-
-                {/* Zipper / fabric grain placeholder. */}
-                <div
-                  aria-hidden="true"
-                  className="absolute inset-0 opacity-80 bg-[repeating-linear-gradient(90deg,rgba(255,255,255,0.14)_0_2px,rgba(255,255,255,0.02)_2px_7px,rgba(0,0,0,0.35)_7px_12px)]"
+                <Image
+                  src="/images/photo_2026-11-07_06-16-20.jpg"
+                  alt="Macro textile detail — hardware and fabric grain"
+                  fill
+                  sizes="(max-width: 767px) 100vw, 50vw"
+                  draggable={false}
+                  className="object-cover object-center transition-transform duration-[1200ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.02]"
                 />
 
-                <div
+                {/* Legibility scrims for the overlaid captions. */}
+                <span
                   aria-hidden="true"
-                  className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(255,255,255,0.16),transparent_60%)]"
+                  className="pointer-events-none absolute inset-x-0 top-0 h-20 bg-gradient-to-b from-black/45 to-transparent"
+                />
+                <span
+                  aria-hidden="true"
+                  className="pointer-events-none absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-black/45 to-transparent"
                 />
 
                 <span className="absolute left-5 top-5 z-10 text-[8px] uppercase tracking-[0.32em] text-white/55 md:left-8 md:top-8">

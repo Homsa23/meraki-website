@@ -1,6 +1,7 @@
 import { Geist, Geist_Mono, Playfair_Display } from "next/font/google";
 import "./globals.css";
 import { CartProvider } from "@/context/CartContext";
+import { AuthProvider } from "@/context/AuthContext";
 import CartDrawer from "@/components/cart/CartDrawer";
 import CustomCursor from "@/components/cursor/CustomCursor";
 import Preloader from "@/components/preloader/Preloader";
@@ -38,10 +39,12 @@ export default function RootLayout({ children }) {
         suppressHydrationWarning
         className="min-h-full flex flex-col bg-white text-deep-ink"
       >
-        <CartProvider>
-          {children}
-          <CartDrawer />
-        </CartProvider>
+        <AuthProvider>
+          <CartProvider>
+            {children}
+            <CartDrawer />
+          </CartProvider>
+        </AuthProvider>
         <Preloader />
         <CustomCursor />
       </body>

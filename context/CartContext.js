@@ -1,6 +1,21 @@
 "use client";
 
-import { createContext, useContext, useState } from "react";
+import {
+  createContext,
+  useContext,
+  useMemo,
+  useState,
+  useSyncExternalStore,
+} from "react";
+
+const CART_STORAGE_KEY = "meraki:cart";
+const CART_CHANGE_EVENT = "meraki:cart-change";
+
+/** Sentinel used during SSR/hydration so an empty cart is distinguishable. */
+const CART_SERVER_SNAPSHOT = "__meraki_cart_server__";
+
+/** In-memory fallback for browsers where localStorage is unavailable. */
+let memoryCart = null;
 
 const CartContext = createContext({
   isOpen: false,
@@ -23,9 +38,80 @@ function parsePrice(price) {
   return Number.isFinite(value) ? value : 0;
 }
 
+function isStoredItem(item) {
+  return (
+    item &&
+    typeof item === "object" &&
+    typeof item.lineId === "string" &&
+    typeof item.title === "string" &&
+    typeof item.price === "number" &&
+    Number.isFinite(item.price) &&
+    typeof item.quantity === "number" &&
+    item.quantity > 0
+  );
+}
+
+/** Parse a raw localStorage payload, tolerating corrupt or blocked storage. */
+function parseStoredCart(raw) {
+  if (!raw || raw === CART_SERVER_SNAPSHOT) return [];
+
+  try {
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed.filter(isStoredItem) : [];
+  } catch {
+    return [];
+  }
+}
+
+function getCartSnapshot() {
+  if (typeof window === "undefined") return CART_SERVER_SNAPSHOT;
+
+  try {
+    return window.localStorage.getItem(CART_STORAGE_KEY) ?? "[]";
+  } catch {
+    return memoryCart ?? "[]";
+  }
+}
+
+function getServerCartSnapshot() {
+  return CART_SERVER_SNAPSHOT;
+}
+
+/** Subscribe to cart changes from this tab and from other tabs. */
+function subscribeToCart(onChange) {
+  if (typeof window === "undefined") return () => {};
+
+  window.addEventListener("storage", onChange);
+  window.addEventListener(CART_CHANGE_EVENT, onChange);
+
+  return () => {
+    window.removeEventListener("storage", onChange);
+    window.removeEventListener(CART_CHANGE_EVENT, onChange);
+  };
+}
+
+function writeCart(items) {
+  const raw = JSON.stringify(items);
+  memoryCart = raw;
+
+  try {
+    window.localStorage.setItem(CART_STORAGE_KEY, raw);
+  } catch {
+    // Storage can be unavailable (private mode / quota); the in-memory
+    // fallback above still keeps the cart usable for this session.
+  }
+
+  window.dispatchEvent(new Event(CART_CHANGE_EVENT));
+}
+
 export function CartProvider({ children }) {
   const [isOpen, setIsOpen] = useState(false);
-  const [items, setItems] = useState([]);
+  const rawCart = useSyncExternalStore(
+    subscribeToCart,
+    getCartSnapshot,
+    getServerCartSnapshot
+  );
+  const items = useMemo(() => parseStoredCart(rawCart), [rawCart]);
 
   const openCart = () => setIsOpen(true);
   const closeCart = () => setIsOpen(false);
@@ -36,40 +122,42 @@ export function CartProvider({ children }) {
 
     const lineId = `${product.id}:${size}`;
     const unitPrice = parsePrice(product.price);
+    const current = parseStoredCart(getCartSnapshot());
+    const existing = current.find((item) => item.lineId === lineId);
 
-    setItems((prev) => {
-      const existing = prev.find((item) => item.lineId === lineId);
-
-      if (existing) {
-        return prev.map((item) =>
+    const next = existing
+      ? current.map((item) =>
           item.lineId === lineId
             ? { ...item, quantity: item.quantity + 1 }
             : item
-        );
-      }
+        )
+      : [
+          ...current,
+          {
+            lineId,
+            productId: product.id,
+            code: product.code || "MRK-01",
+            title: product.name,
+            size,
+            price: unitPrice,
+            formattedPrice: product.price,
+            image: product.images?.[0]?.src || "",
+            quantity: 1,
+          },
+        ];
 
-      return [
-        ...prev,
-        {
-          lineId,
-          productId: product.id,
-          code: product.code || "MRK-01",
-          title: product.name,
-          size,
-          price: unitPrice,
-          formattedPrice: product.price,
-          image: product.images?.[0]?.src || "",
-          quantity: 1,
-        },
-      ];
-    });
+    writeCart(next);
   };
 
   const removeItem = (lineId) => {
-    setItems((prev) => prev.filter((item) => item.lineId !== lineId));
+    writeCart(
+      parseStoredCart(getCartSnapshot()).filter(
+        (item) => item.lineId !== lineId
+      )
+    );
   };
 
-  const clearCart = () => setItems([]);
+  const clearCart = () => writeCart([]);
 
   const totalCount = items.reduce(
     (sum, item) => sum + (item.quantity || 1),

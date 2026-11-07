@@ -5,12 +5,14 @@ import Link from "next/link";
 import { motion, useReducedMotion } from "framer-motion";
 import { useMemo, useRef, useState, useSyncExternalStore } from "react";
 import {
+  clearStoredOutfit,
   getOutfitSnapshot,
   getProductsByIds,
   getServerOutfitSnapshot,
   OUTFIT_SERVER_SNAPSHOT,
   parseStoredOutfit,
   subscribeToOutfit,
+  writeStoredOutfit,
 } from "@/lib/collection";
 
 /* -------------------------------------------------------------------------- */
@@ -78,6 +80,17 @@ export default function OutfitCanvas() {
   const backHref =
     collection === "WOMEN" ? "/women" : collection === "MEN" ? "/men" : "/";
   const backLabel = collection ? `Back to ${collection.toLowerCase()}` : "Back";
+
+  const removeProduct = (id: string) => {
+    writeStoredOutfit({
+      collection,
+      ids: outfit.ids.filter((storedId) => storedId !== id),
+    });
+  };
+
+  const clearCanvas = () => {
+    clearStoredOutfit();
+  };
 
   return (
     <main
@@ -153,12 +166,23 @@ export default function OutfitCanvas() {
           </div>
 
           {ready && products.length > 0 && (
-            <p className="hidden pb-2 text-right text-[8px] uppercase leading-relaxed tracking-[0.28em] text-basalt/50 md:block">
-              Drag to compose
-              <span className="mt-1 block text-basalt/35">
-                {String(products.length).padStart(2, "0")} pieces
-              </span>
-            </p>
+            <div className="flex items-end gap-6 pb-2">
+              <p className="hidden text-right text-[8px] uppercase leading-relaxed tracking-[0.28em] text-basalt/50 md:block">
+                Drag to compose
+                <span className="mt-1 block text-basalt/35">
+                  {String(products.length).padStart(2, "0")} pieces
+                </span>
+              </p>
+
+              <button
+                type="button"
+                onClick={clearCanvas}
+                aria-label="Clear canvas"
+                className="text-[9px] uppercase tracking-[0.24em] text-deep-ink/60 transition-colors duration-500 hover:text-crimson focus-visible:text-crimson focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-4 focus-visible:outline-crimson"
+              >
+                [ CLEAR CANVAS ]
+              </button>
+            </div>
           )}
         </div>
 
@@ -196,6 +220,7 @@ export default function OutfitCanvas() {
                 style={{ zIndex: dragging ? 60 : 10 + i }}
               >
                 <motion.div
+                  className="relative"
                   initial={reduceMotion ? false : { opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{
@@ -204,6 +229,19 @@ export default function OutfitCanvas() {
                     ease: [0.22, 1, 0.36, 1],
                   }}
                 >
+                  <button
+                    type="button"
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      removeProduct(product.id);
+                    }}
+                    onPointerDown={(event) => event.stopPropagation()}
+                    aria-label={`Remove ${product.name} from canvas`}
+                    className="absolute -right-2 -top-2 z-20 px-1 py-1 text-[10px] uppercase tracking-[0.16em] text-deep-ink/55 transition-colors duration-300 hover:text-crimson focus-visible:text-crimson focus-visible:outline-none"
+                  >
+                    [ × ]
+                  </button>
+
                   <Image
                     src={front.src}
                     alt={`${product.name} — ${product.meta}`}
@@ -257,7 +295,32 @@ export default function OutfitCanvas() {
               </div>
             </>
           ) : (
-            <span className="sr-only">Loading outfit</span>
+            <motion.div
+              key="canvas-loading"
+              role="status"
+              aria-live="polite"
+              initial={reduceMotion ? false : { opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+              className="flex flex-col items-center gap-5"
+            >
+              <motion.span
+                aria-hidden="true"
+                className="pl-[0.3em] font-editorial text-[30px] lowercase leading-none tracking-[0.3em] text-deep-ink md:text-[38px]"
+                animate={reduceMotion ? undefined : { opacity: [0.2, 1, 0.2] }}
+                transition={
+                  reduceMotion
+                    ? undefined
+                    : { duration: 1.8, repeat: Infinity, ease: "easeInOut" }
+                }
+              >
+                meraki
+              </motion.span>
+
+              <span className="pl-[0.32em] text-[8px] uppercase tracking-[0.32em] text-basalt/55">
+                LOADING CANVAS...
+              </span>
+            </motion.div>
           )}
         </section>
       )}

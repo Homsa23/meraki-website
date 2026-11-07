@@ -281,3 +281,13 @@ export function writeStoredOutfit(outfit: StoredOutfit): void {
     // Storage can be unavailable (private mode / quota); navigation still works.
   }
 }
+
+/** Wipe the stored outfit and notify every canvas subscriber. */
+export function clearStoredOutfit(): void {
+  try {
+    window.localStorage.removeItem(OUTFIT_STORAGE_KEY);
+    window.dispatchEvent(new Event(OUTFIT_CHANGE_EVENT));
+  } catch {
+    // Storage can be unavailable (private mode / quota); the canvas still clears.
+  }
+}

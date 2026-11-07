@@ -6,7 +6,10 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "deploy:rules": "node --env-file-if-exists=.env.local scripts/deploy-rules.mjs",
+    "register:web-app": "node --env-file-if-exists=.env.local scripts/register-web-app.mjs",
+    "seed:products": "node --env-file-if-exists=.env.local scripts/seed-products.mjs"
   },
   "dependencies": {
     "@vercel/speed-insights": "^2.0.0",
@@ -23,6 +26,7 @@
     "@types/react-dom": "^19.3.0",
     "eslint": "^9",
     "eslint-config-next": "16.4.3",
+    "firebase-admin": "^14.5.0",
     "tailwindcss": "^4"
   }
 }
