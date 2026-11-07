@@ -1,129 +1,186 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect } from "react";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { useEffect, useState } from "react";
 import { useCart } from "@/context/CartContext";
 
 export default function CartDrawer() {
-  const { isOpen, closeCart, items, subtotal } = useCart();
+  const {
+    isOpen,
+    closeCart,
+    items,
+    removeItem,
+    subtotal,
+    totalCount,
+  } = useCart();
+  const reduceMotion = useReducedMotion() === true;
+  const [offline, setOffline] = useState(false);
 
-  // Close on Escape key press
   useEffect(() => {
-    const handleKeyDown = (e) => {
-      if (e.key === "Escape" && isOpen) {
-        closeCart();
-      }
+    if (!isOpen) return;
+
+    const onKeyDown = (event) => {
+      if (event.key === "Escape") closeCart();
     };
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
+
+    window.addEventListener("keydown", onKeyDown);
+
+    return () => window.removeEventListener("keydown", onKeyDown);
   }, [isOpen, closeCart]);
 
-  // Prevent background body scroll when drawer is open
   useEffect(() => {
-    if (isOpen) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "";
-    }
+    if (!isOpen) return;
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
     return () => {
-      document.body.style.overflow = "";
+      document.body.style.overflow = previousOverflow;
     };
   }, [isOpen]);
 
-  if (!isOpen) return null;
-
   return (
-    <div className="fixed inset-0 z-50 flex justify-end">
-      {/* Backdrop overlay */}
-      <div
-        onClick={closeCart}
-        aria-hidden="true"
-        className="fixed inset-0 bg-black/40 backdrop-blur-[2px] transition-opacity duration-200"
-      />
-
-      {/* Side Drawer Panel */}
-      <aside
-        aria-label="Shopping Cart Drawer"
-        className="relative z-10 w-full max-w-md sm:max-w-lg bg-meraki-cream border-l border-meraki-stone shadow-none rounded-none flex flex-col justify-between h-full animate-in slide-in-from-right duration-200"
-      >
-        {/* Top Header */}
-        <div className="flex items-center justify-between px-6 py-5 border-b border-meraki-stone">
-          <span className="font-mono text-xs sm:text-sm font-bold uppercase tracking-widest text-meraki-black">
-            [ SHOPPING CART ]
-          </span>
-
+    <AnimatePresence onExitComplete={() => setOffline(false)}>
+      {isOpen && (
+        <motion.div
+          key="cart-drawer"
+          className="fixed inset-0 z-[140]"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: reduceMotion ? 0 : 0.4 }}
+        >
           <button
             type="button"
-            onClick={closeCart}
+            tabIndex={-1}
             aria-label="Close cart"
-            className="font-mono text-xs sm:text-sm font-bold uppercase tracking-widest text-meraki-black hover:bg-meraki-black hover:text-meraki-cream px-2 py-1 transition-colors duration-150 rounded-none focus:outline-none"
-          >
-            X
-          </button>
-        </div>
+            onClick={closeCart}
+            className="absolute inset-0 h-full w-full cursor-default bg-deep-ink/[0.04] backdrop-blur-[2px]"
+          />
 
-        {/* Cart Items List */}
-        <div className="flex-1 overflow-y-auto">
-          {items.length === 0 ? (
-            <div className="p-8 font-mono text-xs uppercase tracking-widest text-meraki-stone text-center border-b border-meraki-stone">
-              [ CART IS CURRENTLY EMPTY ]
-            </div>
-          ) : (
-            items.map((item) => (
-              <div
-                key={item.id}
-                className="p-6 border-b border-meraki-stone flex gap-5 items-start"
+          <motion.aside
+            role="dialog"
+            aria-modal="true"
+            aria-label="Shopping cart"
+            className="absolute inset-y-0 right-0 flex w-full max-w-[440px] flex-col bg-white/85 px-7 pb-8 pt-6 shadow-[-32px_0_80px_rgba(8,9,12,0.08)] backdrop-blur-xl md:px-10 md:pb-10 md:pt-8"
+            initial={reduceMotion ? false : { x: "100%" }}
+            animate={{ x: 0 }}
+            exit={reduceMotion ? { opacity: 0 } : { x: "100%" }}
+            transition={{
+              duration: reduceMotion ? 0 : 0.7,
+              ease: [0.22, 1, 0.36, 1],
+            }}
+          >
+            <div className="flex items-start justify-between border-b border-basalt/10 pb-4">
+              <span className="font-mono text-[10px] uppercase tracking-[0.24em] text-deep-ink/70">
+                [ CART ({totalCount}) ]
+              </span>
+
+              <button
+                type="button"
+                aria-label="Close cart"
+                autoFocus
+                onClick={closeCart}
+                className="-mr-1 px-1 py-1 text-[10px] uppercase tracking-[0.22em] text-deep-ink/70 transition-opacity duration-500 hover:opacity-45 focus-visible:opacity-45 focus-visible:outline-none"
               >
-                {/* Square Thumbnail */}
-                <div className="relative w-20 h-20 sm:w-24 sm:h-24 bg-meraki-cream border border-meraki-stone shrink-0 overflow-hidden">
-                  <Image
-                    src={item.image || "/images/asymmetrical-denim-jacket.jpg"}
-                    alt={item.title}
-                    fill
-                    sizes="(max-width: 640px) 80px, 96px"
-                    className="object-cover object-center"
-                  />
-                </div>
-
-                {/* Item Details */}
-                <div className="flex-1 min-w-0">
-                  <h3 className="font-mono text-xs sm:text-sm font-bold uppercase tracking-wider text-meraki-black truncate">
-                    {item.title}
-                  </h3>
-                  <div className="font-mono text-xs text-meraki-stone tracking-widest mt-1">
-                    {item.size || "SZ: L"}
-                  </div>
-                  <div className="font-mono text-xs sm:text-sm font-bold text-meraki-black mt-3">
-                    {item.formattedPrice || `$${Number(item.price).toFixed(2)}`}
-                  </div>
-                </div>
-              </div>
-            ))
-          )}
-
-          {/* Subtotal & Taxes Info */}
-          <div className="p-6 border-b border-meraki-stone">
-            <div className="flex justify-between items-center font-mono text-xs sm:text-sm uppercase tracking-widest text-meraki-black">
-              <span>SUBTOTAL</span>
-              <span className="font-bold">${subtotal.toFixed(2)} USD</span>
+                Close
+              </button>
             </div>
-          </div>
 
-          <div className="px-6 py-4 border-b border-meraki-stone font-mono text-[10px] sm:text-xs text-meraki-stone uppercase tracking-wider">
-            [ TAXES &amp; SHIPPING CALCULATED AT FINAL CHECKOUT ]
-          </div>
-        </div>
+            <div className="flex-1 overflow-y-auto">
+              {items.length === 0 ? (
+                <div className="flex h-full flex-col items-center justify-center gap-3 text-center">
+                  <span className="font-editorial text-[24px] uppercase tracking-[0.16em] text-deep-ink/80">
+                    Empty
+                  </span>
+                  <span className="font-mono text-[8px] uppercase tracking-[0.26em] text-basalt/50">
+                    [ NO ITEMS IN ARCHIVE ]
+                  </span>
+                </div>
+              ) : (
+                <ul className="divide-y divide-basalt/10">
+                  {items.map((item) => (
+                    <li key={item.lineId} className="flex gap-4 py-5">
+                      <div className="relative h-24 w-16 shrink-0 overflow-hidden bg-basalt/[0.04]">
+                        {item.image ? (
+                          <Image
+                            src={item.image}
+                            alt={item.title}
+                            fill
+                            sizes="64px"
+                            className="object-contain p-1"
+                          />
+                        ) : (
+                          <span className="flex h-full items-center justify-center font-mono text-[9px] tracking-[0.2em] text-basalt/45">
+                            MRK
+                          </span>
+                        )}
+                      </div>
 
-        {/* Absolute Bottom: Full-Width PROCEED TO CHECKOUT Button */}
-        <div className="w-full shrink-0">
-          <button
-            type="button"
-            className="w-full block text-center py-5 sm:py-6 bg-meraki-black text-meraki-cream font-mono font-bold text-xs sm:text-sm tracking-[0.25em] uppercase rounded-none border-t border-meraki-black transition-colors duration-150 hover:bg-meraki-cream hover:text-meraki-black focus:outline-none cursor-pointer"
-          >
-            PROCEED TO CHECKOUT
-          </button>
-        </div>
-      </aside>
-    </div>
+                      <div className="min-w-0 flex-1">
+                        <div className="flex items-start justify-between gap-3">
+                          <div className="min-w-0">
+                            <p className="font-mono text-[8px] uppercase tracking-[0.24em] text-basalt/55">
+                              {item.code}
+                            </p>
+                            <h3 className="mt-1 truncate font-editorial text-[15px] leading-tight text-deep-ink">
+                              {item.title}
+                            </h3>
+                          </div>
+
+                          <button
+                            type="button"
+                            onClick={() => removeItem(item.lineId)}
+                            aria-label={`Remove ${item.title}`}
+                            className="-mr-1 -mt-1 shrink-0 px-1 text-[15px] leading-none text-basalt/45 transition-colors duration-300 hover:text-crimson focus-visible:text-crimson focus-visible:outline-none"
+                          >
+                            ×
+                          </button>
+                        </div>
+
+                        <div className="mt-4 flex items-baseline justify-between gap-3 font-mono text-[9px] uppercase tracking-[0.2em]">
+                          <span className="text-basalt/60">
+                            SZ: {item.size}
+                            {item.quantity > 1 ? ` / QTY ${item.quantity}` : ""}
+                          </span>
+                          <span className="shrink-0 text-deep-ink">
+                            {item.formattedPrice}
+                          </span>
+                        </div>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+
+            <div className="shrink-0 border-t border-basalt/10 pt-5">
+              <div className="flex items-center justify-between font-mono text-[10px] uppercase tracking-[0.24em]">
+                <span className="text-basalt/60">Subtotal</span>
+                <span className="text-deep-ink">
+                  € {subtotal.toFixed(2)}{" "}
+                  <span className="text-basalt/45">EUR</span>
+                </span>
+              </div>
+
+              <p className="mt-2 font-mono text-[8px] uppercase tracking-[0.2em] text-basalt/45">
+                Taxes &amp; shipping calculated at checkout
+              </p>
+
+              <button
+                type="button"
+                onClick={() => setOffline(true)}
+                disabled={items.length === 0}
+                aria-live="polite"
+                className="mt-5 w-full bg-deep-ink py-4 text-center font-mono text-[10px] font-bold uppercase tracking-[0.32em] text-white transition-colors duration-300 hover:bg-crimson focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-4 focus-visible:outline-crimson disabled:cursor-not-allowed disabled:opacity-30"
+              >
+                {offline ? "SYSTEM OFFLINE" : "PROCEED TO CHECKOUT"}
+              </button>
+            </div>
+          </motion.aside>
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 }

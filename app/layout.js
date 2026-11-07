@@ -3,6 +3,8 @@ import "./globals.css";
 import { CartProvider } from "@/context/CartContext";
 import CartDrawer from "@/components/cart/CartDrawer";
 import CustomCursor from "@/components/cursor/CustomCursor";
+import Preloader from "@/components/preloader/Preloader";
+import { SpeedInsights } from "@vercel/speed-insights/next"
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -40,6 +42,7 @@ export default function RootLayout({ children }) {
           {children}
           <CartDrawer />
         </CartProvider>
+        <Preloader />
         <CustomCursor />
       </body>
     </html>

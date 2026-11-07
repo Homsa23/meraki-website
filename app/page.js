@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { useCallback, useEffect, useState } from "react";
+import { SpeedInsights } from "@vercel/speed-insights/next"
 
 import ClientDrawer from "@/components/client/ClientDrawer";
 import LookbookSpread from "@/components/lookbook/LookbookSpread";
@@ -42,7 +43,7 @@ const INDEX_LINKS = [
   { label: "Men", href: "/men" },
   { label: "Women", href: "/women" },
   { label: "Archive", href: "#frame-01" },
-  { label: "Contact", href: "mailto:studio@meraki.example" },
+  { label: "Contact", href: "/contact" },
   { label: "Client", action: "client" },
 ];
 
@@ -266,7 +267,7 @@ export default function Home() {
 
           {/* IMAGE STAGE */}
           <section className="relative z-10 flex min-h-0 flex-1 items-center justify-center lg:px-12 lg:py-8">
-            <div className="image-stage relative h-full max-h-[760px] w-full max-w-[1080px] lg:grid lg:grid-cols-2 lg:gap-6">
+            <div className="image-stage relative h-full max-h-[760px] w-full max-w-[1080px] lg:grid lg:grid-cols-2 lg:gap-8">
               {FRAMES.map((frame, i) => {
                 const delay = reduceMotion ? 0 : 0.12 + i * 0.08;
 
@@ -274,11 +275,10 @@ export default function Home() {
                   <figure
                     key={frame.id}
                     id={frame.id}
-                    className={`frame group absolute w-auto max-w-none transform transition-all duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] lg:static lg:h-full lg:flex lg:flex-col lg:hover:scale-[1.015] ${
-                      i === 0
-                        ? "left-[4%] top-1/2 z-20 -translate-y-[58%] -rotate-[3.5deg] lg:translate-y-6 lg:-rotate-1"
-                        : "right-[4%] top-1/2 z-10 -translate-y-[42%] rotate-[2.5deg] lg:-translate-y-2 lg:rotate-[1.5deg]"
-                    } lg:z-auto`}
+                    className={`frame group absolute w-auto max-w-none transform transition-all duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] lg:static lg:h-full lg:flex lg:flex-col lg:hover:scale-[1.015] ${i === 0
+                        ? "left-[4%] top-1/2 z-20 -translate-y-[58%] -rotate-[3.5deg]"
+                        : "right-[4%] top-1/2 z-10 -translate-y-[42%] rotate-[2.5deg]"
+                      } lg:z-auto lg:translate-y-0`}
                   >
                     <motion.div
                       className="will-change-transform lg:h-full"

@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 
-const LINEN = "#E8DDC5";
+const WHITE = "#FFFFFF";
 const INK = "#08090C";
 
 const PIECES = [
@@ -38,11 +38,11 @@ const PIECES = [
 export default function CollectionView({ gender, index }) {
   return (
     <main
-      className="relative min-h-[100svh] w-full overflow-x-hidden bg-linen-cream px-5 pb-5 pt-5 text-deep-ink md:px-8 md:pb-6 md:pt-6"
-      style={{ backgroundColor: LINEN, color: INK }}
+      className="relative min-h-[100svh] w-full overflow-x-hidden bg-white px-5 pb-5 pt-5 text-deep-ink md:px-8 md:pb-6 md:pt-6"
+      style={{ backgroundColor: WHITE, color: INK }}
     >
       <style>{`
-        html, body { background: ${LINEN}; }
+        html, body { background: ${WHITE}; }
 
         .noise-layer {
           background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.86' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
@@ -119,7 +119,7 @@ export default function CollectionView({ gender, index }) {
         <div className="mt-8 grid grid-cols-2 gap-5 md:grid-cols-4 md:gap-6">
           {PIECES.map((piece) => (
             <article key={piece.no} className="piece group">
-              <div className="relative aspect-[3/4] w-full overflow-hidden border border-basalt/10 bg-linen-cream p-2 shadow-[0_18px_50px_rgba(8,9,12,0.12)]">
+              <div className="relative aspect-[3/4] w-full overflow-hidden border border-basalt/10 bg-white p-2 shadow-[0_18px_50px_rgba(8,9,12,0.12)]">
                 <div className="relative h-full w-full overflow-hidden bg-basalt/15">
                   <Image
                     src={piece.src}

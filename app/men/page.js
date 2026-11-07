@@ -1,4 +1,4 @@
-import FloatingProductGallery from "@/components/collection/FloatingProductGallery";
+import CollectionGrid from "@/components/collection/CollectionGrid";
 
 export const metadata = {
   title: "Men | Meraki",
@@ -6,5 +6,5 @@ export const metadata = {
 };
 
 export default function MenPage() {
-  return <FloatingProductGallery gender="MEN" index="01" />;
+  return <CollectionGrid gender="MEN" index="01" />;
 }
